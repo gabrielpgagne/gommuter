@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"googlemaps.github.io/maps"
 )
@@ -28,7 +29,6 @@ func main() {
 		key = &value
 		if !exists {
 			// Variable is set
-			fmt.Println("Using ")
 			fmt.Println("Missing Google Maps API Key (env. var GOOGLE_MAPS_API_KEY)")
 			flag.Usage()
 		}
@@ -49,5 +49,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("fatal error: %s", err)
 	}
-	fmt.Println(routes.Rows[0].Elements[0].DurationInTraffic.Minutes())
+	s := fmt.Sprintf("%d,%f", time.Now().UTC().Unix(), routes.Rows[0].Elements[0].DurationInTraffic.Minutes())
+	fmt.Println(s)
 }
