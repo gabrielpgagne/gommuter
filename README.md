@@ -2,7 +2,7 @@
 
 Fetch via Google Maps API the commute time for an itinerary.
 
-## Setting up
+## Setup
 
 Create an environment file `/path/to/gommuter/.env` with the variables:
 
@@ -19,20 +19,12 @@ FROM="Apple Park"
 TO="Googleplex"
 ```
 
-## Compile for Rpi
-
-`GOOS=linux GOARCH=arm64 go build; cp gommutetime cron/`
-
-## Transfer to Rpi
-
-`scp commute-time rpi.local:Documents/commute_time`
-
-## Launch Docker containers
+## Usage
 
 The project uses two docker images: 
 
 1. A "cron" container which calls the Google Maps API at the times configured in `cron/crontab`
-2. A "web" container which reads the CSV data generated from "cron" and creates a dashboard from it at `0.0.0.0:8050/tcp`
+2. A "web" container which reads the data from "cron" and creates a dashboard from it at `0.0.0.0:8050/tcp`
 
 To launch the containers:
 
