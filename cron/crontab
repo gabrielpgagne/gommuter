@@ -1,0 +1,2 @@
+0,30,0,30,0,30,0 6,6,7,7,8,8,9 * * 1-5 /app/gommutetime -from "$FROM" -to "$TO" >> /app/data/to.csv
+0,30,0,30,0,30 15,15,16,16,17,17 * * 1-5 /app/gommutetime -to "$FROM" -from "$TO" >> /app/data/from.csv

@@ -49,6 +49,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("fatal error: %s", err)
 	}
-	s := fmt.Sprintf("%d,%f", time.Now().UTC().Unix(), routes.Rows[0].Elements[0].DurationInTraffic.Minutes())
+	t := time.Now().Format(time.RFC3339)
+	s := fmt.Sprintf("%s,%f", t, routes.Rows[0].Elements[0].DurationInTraffic.Minutes())
 	fmt.Println(s)
 }

@@ -1,4 +1,4 @@
-module commute-time
+module gommutetime
 
 go 1.23.1
 

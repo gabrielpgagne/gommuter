@@ -8,6 +8,9 @@
 *.so
 *.dylib
 
+data/*.csv
+gommutetime
+
 .venv
 
 # Test binary, built with `go test -c`
