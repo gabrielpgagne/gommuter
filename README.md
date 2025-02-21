@@ -9,19 +9,21 @@ Create an environment file `/path/to/gommuter/.env` with the variables:
 - `GOOGLE_MAPS_API_KEY`
 - `FROM`: the starting point
 - `TO`: the destination
+- `DASHBOARD_PASSWORD`: Password for the online dashboard. Optional.
 
 For example:
 
-```
+```conf
 # .env
 GOOGLE_MAPS_API_KEY="foobarbaz"
 FROM="Apple Park"
 TO="Googleplex"
+DASHBOARD_PASSWORD="admin"
 ```
 
 ## Usage
 
-The project uses two docker images: 
+The project uses two docker images:
 
 1. A "cron" container which calls the Google Maps API at the times configured in `cron/crontab`
 2. A "web" container which reads the data from "cron" and creates a dashboard from it at `0.0.0.0:8050/tcp`

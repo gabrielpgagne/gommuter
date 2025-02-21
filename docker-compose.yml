@@ -20,6 +20,8 @@ services:
       - ./data:/app/data:ro  # Read-only access to data
     depends_on:
       - cron
+    env_file:
+      - ".env"
     restart: unless-stopped
 
 volumes:
