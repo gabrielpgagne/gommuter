@@ -17,4 +17,4 @@ RUN mkdir -p /app/data
 EXPOSE 8050
 
 # Start the Dash application
-CMD ["streamlit", "dashboard.py", "--server.port=8050"]
+CMD ["streamlit", "run", "dashboard.py", "--server.port=8050"]
