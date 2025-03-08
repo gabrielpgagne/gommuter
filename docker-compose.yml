@@ -7,17 +7,7 @@ services:
       - ./data:/app/data
       - "/etc/localtime:/etc/localtime:ro" # use host time
     env_file:
-      - "cron1.env"
-    restart: unless-stopped
-  cron2:
-    build:
-      context: ./cron
-      dockerfile: Dockerfile
-    volumes:
-      - ./data:/app/data
-      - "/etc/localtime:/etc/localtime:ro" # use host time
-    env_file:
-      - "cron2.env"
+      - "cron/cron.env"
     restart: unless-stopped
 
   web:

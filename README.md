@@ -4,24 +4,7 @@ Fetch via Google Maps API the commute time for an itinerary.
 
 ## Setup
 
-Create an environment file `/path/to/gommuter/cron<ID>.env` with the variables:
-
-- `GOOGLE_MAPS_API_KEY`
-- `FROM`: the starting point
-- `TO`: the destination
-- `ID`: ID (e.g., 1)
-
-For example:
-
-```conf
-# cron1.env
-GOOGLE_MAPS_API_KEY="foobarbaz"
-FROM="Apple Park"
-TO="Googleplex"
-ID="1"
-```
-
-You can have multiple itineraries by creating multiple env files with different IDs. A tab is created for each itinerary in the web dashboard.
+Create an environment file `/path/to/gommuter/cron/cron.env` with the `GOOGLE_MAPS_API_KEY` variable. Then, add itineraries in `cron/crontab`.
 
 ## Usage
 
