@@ -4,6 +4,8 @@ Fetch via Google Maps API the commute time for an itinerary.
 
 ## Setup
 
+Build the Go executable: `go build . && mv gommutetime cron`.
+
 Create an environment file `/path/to/gommuter/cron/cron.env` with the `GOOGLE_MAPS_API_KEY` variable. Then, add itineraries in `cron/crontab`.
 
 ## Usage
