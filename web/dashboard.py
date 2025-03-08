@@ -1,8 +1,6 @@
-# Import packages
 import streamlit as st
 import pandas as pd
 import os
-import hmac
 
 
 def load_commute_time(file):
@@ -31,97 +29,88 @@ def get_average_commute_time_daywise(df: pd.DataFrame):
     return avg_time_daywise
 
 
-def check_password():
-    """Returns `True` if the user had the correct password."""
+def get_data_ids():
+    ids = []
+    for f in os.listdir("data"):
+        id = f.split("-")[-1].replace(".csv", "")
+        if id.isdigit():
+            ids.append(id)
+    ids = list(set(ids))
+    ids.sort()
+    return ids
 
-    def password_entered():
-        """Checks whether a password entered by the user is correct."""
-        if hmac.compare_digest(
-            st.session_state["password"], os.environ["DASHBOARD_PASSWORD"]
-        ):
-            st.session_state["password_correct"] = True
-            del st.session_state["password"]  # Don't store the password.
-        else:
-            st.session_state["password_correct"] = False
 
-    # Return True if the password is validated.
-    if st.session_state.get("password_correct", False):
-        return True
+def make_tab(id):
+    col1, col2 = st.columns(2, border=True)
+    with col1:
+        st.header("Commute time - to")
+        df = load_commute_time(f"data/to-{id}.csv")
 
-    # Show input for password.
-    st.text_input(
-        "Password", type="password", on_change=password_entered, key="password"
-    )
-    if "password_correct" in st.session_state:
-        st.error("😕 Password incorrect")
-    return False
+        st.subheader("Average commute time")
+        adf = get_average_commute_time(df)
+        adf["+/-"] = df.groupby("hour_min")["commute_time"].std().values
+        st.bar_chart(
+            adf,
+            x="hour_min",
+            y="commute_time",
+            x_label="Departure time (HH:MM)",
+            y_label="Average commute time (min)",
+            color="+/-",
+        )
+
+        st.subheader("Average day-wise commute time")
+        adf = get_average_commute_time_daywise(df)
+        st.bar_chart(
+            adf,
+            x="hour_min",
+            y="commute_time",
+            x_label="Departure time (HH:MM)",
+            y_label="Average commute time (min)",
+            stack=False,
+            color="weekday",
+        )
+    if st.checkbox(f"Show 'to-{id}' data"):
+        st.dataframe(df)
+
+    with col2:
+        st.header("Commute time - from")
+        df = load_commute_time(f"data/from-{id}.csv")
+
+        st.subheader("Average commute time")
+        adf = get_average_commute_time(df)
+        adf["+/-"] = df.groupby("hour_min")["commute_time"].std().values
+        st.bar_chart(
+            adf,
+            x="hour_min",
+            y="commute_time",
+            x_label="Departure time (HH:MM)",
+            y_label="Average commute time (min)",
+            color="+/-",
+        )
+
+        st.subheader("Average day-wise commute time")
+        adf = get_average_commute_time_daywise(df)
+        st.bar_chart(
+            adf,
+            x="hour_min",
+            y="commute_time",
+            x_label="Departure time (HH:MM)",
+            y_label="Average commute time (min)",
+            stack=False,
+            color="weekday",
+        )
+
+    if st.checkbox(f"Show 'from-{id}' data"):
+        st.dataframe(df)
 
 
 # Run the app
 if __name__ == "__main__":
     st.set_page_config(page_title="Commute time dashboard", layout="wide")
 
-    if "DASHBOARD_PASSWORD" in os.environ and not check_password():
-        st.stop()  # Do not continue if check_password is not True.
-
-    col1, col2 = st.columns(2, border=True)
-    with col1:
-        st.header("Commute time - to")
-        df = load_commute_time("data/to.csv")
-
-        st.subheader("Average commute time")
-        adf = get_average_commute_time(df)
-        adf["+/-"] = df.groupby("hour_min")["commute_time"].std().values
-        st.bar_chart(
-            adf,
-            x="hour_min",
-            y="commute_time",
-            x_label="Departure time (HH:MM)",
-            y_label="Average commute time (min)",
-            color="+/-",
-        )
-
-        st.subheader("Average day-wise commute time")
-        adf = get_average_commute_time_daywise(df)
-        st.bar_chart(
-            adf,
-            x="hour_min",
-            y="commute_time",
-            x_label="Departure time (HH:MM)",
-            y_label="Average commute time (min)",
-            stack=False,
-            color="weekday",
-        )
-    if st.checkbox("Show 'to' data"):
-        st.dataframe(df)
-
-    with col2:
-        st.header("Commute time - from")
-        df = load_commute_time("data/from.csv")
-
-        st.subheader("Average commute time")
-        adf = get_average_commute_time(df)
-        adf["+/-"] = df.groupby("hour_min")["commute_time"].std().values
-        st.bar_chart(
-            adf,
-            x="hour_min",
-            y="commute_time",
-            x_label="Departure time (HH:MM)",
-            y_label="Average commute time (min)",
-            color="+/-",
-        )
-
-        st.subheader("Average day-wise commute time")
-        adf = get_average_commute_time_daywise(df)
-        st.bar_chart(
-            adf,
-            x="hour_min",
-            y="commute_time",
-            x_label="Departure time (HH:MM)",
-            y_label="Average commute time (min)",
-            stack=False,
-            color="weekday",
-        )
-
-    if st.checkbox("Show 'from' data"):
-        st.dataframe(df)
+    ids = get_data_ids()
+    tabs = st.tabs([str(i) for i in ids])
+    for i, id in enumerate(ids):
+        with tabs[i]:
+            st.header(f"Itinerary {id}")
+            make_tab(id)

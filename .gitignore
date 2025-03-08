@@ -8,6 +8,8 @@
 *.so
 *.dylib
 
+*.env
+
 data/*.csv
 gommutetime
 

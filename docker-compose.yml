@@ -1,13 +1,23 @@
 services:
-  cron:
-    build: 
+  cron1:
+    build:
       context: ./cron
       dockerfile: Dockerfile
     volumes:
       - ./data:/app/data
       - "/etc/localtime:/etc/localtime:ro" # use host time
     env_file:
-      - ".env"
+      - "cron1.env"
+    restart: unless-stopped
+  cron2:
+    build:
+      context: ./cron
+      dockerfile: Dockerfile
+    volumes:
+      - ./data:/app/data
+      - "/etc/localtime:/etc/localtime:ro" # use host time
+    env_file:
+      - "cron2.env"
     restart: unless-stopped
 
   web:
@@ -15,13 +25,9 @@ services:
       context: ./web
       dockerfile: Dockerfile
     ports:
-      - "8050:8050"  # Default Dash port
+      - "8050:8050" # Default Dash port
     volumes:
-      - ./data:/app/data:ro  # Read-only access to data
-    depends_on:
-      - cron
-    env_file:
-      - ".env"
+      - ./data:/app/data:ro # Read-only access to data
     restart: unless-stopped
 
 volumes:
