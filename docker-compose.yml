@@ -1,5 +1,5 @@
 services:
-  cron1:
+  cron:
     build:
       context: ./cron
       dockerfile: Dockerfile
