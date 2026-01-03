@@ -1,2 +1,0 @@
-*/15 6-8 * * 1-5 /app/gommutetime -from "Start" -to "End" >> "/app/data/to-1.csv"
-*/15 15-17 * * 1-5 /app/gommutetime -to "End" -from "Start" >> "/app/data/from-1.csv"
