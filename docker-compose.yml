@@ -1,14 +1,21 @@
 services:
-  cron:
+  scheduler:
     build:
-      context: ./cron
+      context: .
       dockerfile: Dockerfile
     volumes:
       - ./data:/app/data
+      - ./config.yaml:/app/config.yaml:ro
       - "/etc/localtime:/etc/localtime:ro" # use host time
-    env_file:
-      - "cron/cron.env"
+    environment:
+      # Optional: Override API key for security (remove key from config.yaml if using this)
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY:-}
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   web:
     build:
@@ -18,7 +25,13 @@ services:
       - "8050:8050" # Default Dash port
     volumes:
       - ./data:/app/data:ro # Read-only access to data
+      - ./config.yaml:/app/config.yaml:ro # Read config for itinerary metadata
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   data:
