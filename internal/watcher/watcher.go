@@ -23,15 +23,29 @@ func New(configPath string, onReload func(*config.Config) error) (*Watcher, erro
 		return nil, err
 	}
 
-	// Watch the directory (not the file directly, handles editor rewrites)
-	dir := filepath.Dir(configPath)
+	// Get absolute path for more reliable watching
+	absPath, err := filepath.Abs(configPath)
+	if err != nil {
+		watcher.Close()
+		return nil, err
+	}
+
+	// Watch both the file and its directory for maximum compatibility
+	// This handles both direct edits and atomic editor rewrites
+	dir := filepath.Dir(absPath)
 	if err := watcher.Add(dir); err != nil {
 		watcher.Close()
 		return nil, err
 	}
 
+	// Also watch the file directly (helps with Docker bind mounts)
+	if err := watcher.Add(absPath); err != nil {
+		log.Printf("Warning: Could not watch file directly: %v", err)
+		// Continue anyway, directory watch might be sufficient
+	}
+
 	return &Watcher{
-		configPath: configPath,
+		configPath: absPath,
 		watcher:    watcher,
 		onReload:   onReload,
 	}, nil
@@ -51,8 +65,19 @@ func (w *Watcher) Start(ctx context.Context) error {
 				return nil
 			}
 
-			// Only reload on Write or Create events for our config file
-			if event.Name == w.configPath && (event.Op&fsnotify.Write == fsnotify.Write || event.Op&fsnotify.Create == fsnotify.Create) {
+			// Get absolute path of the event for comparison
+			eventPath, _ := filepath.Abs(event.Name)
+
+			// Log all events for debugging (can be removed later)
+			log.Printf("File event: %s %s", event.Op, event.Name)
+
+			// Reload on Write, Create, or Chmod events for our config file
+			// Chmod is included because some editors change permissions during save
+			if eventPath == w.configPath &&
+				(event.Op&fsnotify.Write == fsnotify.Write ||
+					event.Op&fsnotify.Create == fsnotify.Create ||
+					event.Op&fsnotify.Chmod == fsnotify.Chmod) {
+
 				log.Println("Config file changed, reloading...")
 
 				cfg, err := config.LoadConfig(w.configPath)
